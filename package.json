@@ -4,7 +4,9 @@
   "description": "a simple chat-app using nodejs",
   "main": "dist/index.js",
   "scripts": {
-    "start": "nodemon --watch 'src/*.ts' --exec pnpm ts-node src/index.ts"
+    "build": "tsc",
+    "start": "node ./dist/index.js",
+    "dev": "nodemon --watch 'src/*.ts' --exec pnpm ts-node src/index.ts"
   },
   "keywords": [
     "nodejs",

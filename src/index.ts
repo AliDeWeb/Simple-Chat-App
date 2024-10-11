@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { Server } from 'socket.io';
 
 dotenv.config({
-  path: `${__dirname}/.env`,
+  path: `${__dirname}/../.env`,
 });
 
 const port =
@@ -12,7 +12,9 @@ const port =
 
 const app = express();
 app.use(
-  express.static(`${__dirname}/public`),
+  express.static(
+    `${__dirname}/../public`,
+  ),
 );
 const httpServer = createServer(app);
 
