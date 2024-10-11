@@ -302,6 +302,14 @@
           background-color: #daa520;
       }
 
+      .submit-btn {
+          width: 30px !important;
+          height: 30px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+      }
+
       @media (max-width: 913px) {
           .content-chat {
               padding: 0;
@@ -345,8 +353,16 @@
       <div class="message-user-send">
         <input type="text" placeholder="Aa">
       </div>
-      <button type="submit">
-        <i class="fa-solid fa-paper-plane"></i>
+      <button type="submit" class="submit-btn">
+        <i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+               stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+               class="icon icon-tabler icons-tabler-outline icon-tabler-send">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M10 14l11 -11" />
+            <path d="M21 3l-6.5 18a.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a.55 .55 0 0 1 0 -1l18 -6.5" />
+          </svg>
+        </i>
       </button>
     </form>
   </div>
@@ -362,7 +378,7 @@
           <img
             src="https://imgs.search.brave.com/1uh1A9oseaF2rvQeTqMZ-oi9wp24kNMwo-D_71DQDyM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3Ivc3R5bGlzaC1k/ZWZhdWx0LXVzZXIt/cHJvZmlsZS1waG90/by1hdmF0YXItdmVj/dG9yLWlsbHVzdHJh/dGlvbl82NjQ5OTUt/MzUyLmpwZz9zaXpl/PTYyNiZleHQ9anBn"
             alt="">
-          <p class="mt-0 mb-0"><strong>User</strong></p>
+          <p class="mt-0 mb-0"><strong>%%USERNAME%%</strong></p>
           <small>At %%TIME%%</small>
         </div>
         <div class="message-user-left-text">
@@ -372,7 +388,7 @@
   const userMessageTemplate = `
     <div class="message-user-right">
         <div class="message-user-right-img">
-          <p class="mt-0 mb-0"><strong>ME</strong></p>
+          <p class="mt-0 mb-0"><strong>%%USERNAME%%</strong></p>
           <small>At %%TIME%%</small>
           <img
             src="https://imgs.search.brave.com/1uh1A9oseaF2rvQeTqMZ-oi9wp24kNMwo-D_71DQDyM/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS12ZWN0/b3Ivc3R5bGlzaC1k/ZWZhdWx0LXVzZXIt/cHJvZmlsZS1waG90/by1hdmF0YXItdmVj/dG9yLWlsbHVzdHJh/dGlvbl82NjQ5OTUt/MzUyLmpwZz9zaXpl/PTYyNiZleHQ9anBn"
@@ -385,15 +401,16 @@
 </script>
 <script>
   let userIoId = undefined;
+  let userName = undefined;
   const server = io();
-  const sendMessage = (message) => {
+  const sendMessage = (message, username) => {
     server.emit('newMessage', ({
-      id: server.id, message
+      id: server.id, message, username
     }));
   };
-  const showMessageInDom = (userId, message, time) => {
-    if (userId === userIoId) chatSectionSelector.innerHTML += userMessageTemplate.replace('%%MESSAGE%%', message).replace('%%TIME%%', time);
-    else chatSectionSelector.innerHTML += othersMessageTemplate.replace('%%MESSAGE%%', message).replace('%%TIME%%', time);
+  const showMessageInDom = (userId, message, time, username) => {
+    if (userId === userIoId) chatSectionSelector.innerHTML += userMessageTemplate.replace('%%MESSAGE%%', message).replace('%%TIME%%', time).replace('%%USERNAME%%', username);
+    else chatSectionSelector.innerHTML += othersMessageTemplate.replace('%%MESSAGE%%', message).replace('%%TIME%%', time).replace('%%USERNAME%%', username);
   };
 
   // Elements And Events
@@ -402,6 +419,8 @@
   const chatSectionSelector = document.querySelector('.body-chat-message-user');
   window.addEventListener('load', () => {
     inputSelector.focus();
+
+    userName = prompt('what is your name?');
   });
   window.addEventListener('click', () => {
     inputSelector.focus();
@@ -413,7 +432,7 @@
 
     if (!messageValue.length) throw new Error('message must not be empty');
 
-    sendMessage(messageValue);
+    sendMessage(messageValue, userName);
 
     inputSelector.value = '';
     inputSelector.focus();
@@ -423,7 +442,7 @@
     userIoId = server.id;
   });
   server.on('newMessage', (data) => {
-    showMessageInDom(data.id, data.message, data.time);
+    showMessageInDom(data.id, data.message, data.time, data.username);
   });
 </script>
 </body>
