@@ -1,10 +1,13 @@
 import { createServer } from 'http';
-import express from 'express';
+import path from 'path';
+import express, {
+  Request,
+} from 'express';
 import dotenv from 'dotenv';
 import { Server } from 'socket.io';
 
 dotenv.config({
-  path: `${__dirname}/../.env`,
+  path: `.env`,
 });
 
 const port =
@@ -13,8 +16,20 @@ const port =
 const app = express();
 app.use(
   express.static(
-    `${__dirname}/../public`,
+    path.join(process.cwd(), 'public'),
   ),
+);
+app.get(
+  '/',
+  (req: Request, res: any) => {
+    res.sendFile(
+      path.join(
+        process.cwd(),
+        'public',
+        'index.html',
+      ),
+    );
+  },
 );
 const httpServer = createServer(app);
 
